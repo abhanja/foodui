@@ -9,7 +9,14 @@ const UserRegistration = () => {
     const { updateUser } = useAppContext(); // Use the context hook
     const [user, setUser] = useState('');
     const [order, setOrder] = useState('');
+
     
+    const [orderData, setOrderData] = useState({
+        menu: '',
+        qty: '',
+        price: ''
+    });
+
     const [formData, setFormData] = useState({
         name: '',
         username: '',
@@ -29,25 +36,38 @@ const UserRegistration = () => {
         });
     };
 
+    const handleOrderChange = (e) => {
+        const { name, value } = e.target;
+        setOrderData({
+            ...orderData,
+            [name]: value
+        });
+    };    
+
     const handleOrderSubmit = async (e) => {
-        console.log('order');
+        console.log('Order Sumit');
         e.preventDefault();
-    }
+        try {
+            setOrder('order');
+            // Replace 'YOUR_BACKEND_API_ENDPOINT' with the actual endpoint of your backend API
+            const response = await axios.post('http://localhost:2222/api/orders', orderData);
 
-
-    const handleOrderChange = async (e) => {
-        console.log('order');
-        e.preventDefault();
+            // Handle the response as needed, e.g., show a success message or redirect
+            console.log('Form submitted successfully:', response.data);
+        } catch (error) {
+            // Handle errors, e.g., display an error message to the user
+            console.error('Error submitting form:', error);
+        }
     }
 
 
     const handleSubmit = async (e) => {
-        console.log('fwerwerewrcer');
+        console.log('user service');
         e.preventDefault();
         try {
 
             // Replace 'YOUR_BACKEND_API_ENDPOINT' with the actual endpoint of your backend API
-            const response = await axios.post('http://localhost:8081/addUser', formData);
+            const response = await axios.post('http://localhost:8080/addUser', formData);
 
             // Handle the response as needed, e.g., show a success message or redirect
             console.log('Form submitted successfully:', response.data);
@@ -162,13 +182,25 @@ const UserRegistration = () => {
                 <p>Welcome, {user}!</p>
                 <form onSubmit={handleOrderSubmit}>
                     <label>
-                        Food Order:
-                        <input type="text" value={order} onChange={handleOrderChange} />
+                        Menu :
+                        <input type="text" name="menu" value={orderData.menu} onChange={handleOrderChange} />
                     </label>
                     <br />
-                    <button type="submit">Place Order</button>
+                    <label>
+                        Price :
+                        <input type="text" name="price" value={orderData.price} onChange={handleOrderChange} />
+                    </label>
+                    <br />
+                    <label>
+                        Qty :
+                        <input type="text" name="qty" value={orderData.qty} onChange={handleOrderChange} />
+                    </label>
+                    <br />
+
+                    <button type="submit" onClick={handleOrderSubmit}>Place Order</button>
                 </form>
             </div>) : null}
+            {order ? (<label>Order Placed successfully</label>) : null}
         </div>
     );
 };
